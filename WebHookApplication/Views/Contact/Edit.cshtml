@@ -1,0 +1,49 @@
+﻿@model WebHookApplication.ViewModel.ContactViewModel
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+
+<html>
+<head>
+    <title>Edit Contact</title>
+</head>
+<body>
+
+    <html>
+    <head>
+        <title>title</title>
+    </head>
+    <body>
+        <div>
+            @using (@Html.BeginForm("SaveEdit", "Contact"))
+            {
+                @Html.HiddenFor(m => m.id)
+                <div>
+                    @Html.LabelFor(m => m.properties.firstname);
+                    @Html.TextBoxFor(m => m.properties.firstname);
+                </div>
+                <div>
+                    @Html.LabelFor(m => m.properties.lastname);
+                    @Html.TextBoxFor(m => m.properties.lastname);
+                </div>
+                <div>
+                    @Html.LabelFor(m => m.properties.email);
+                    @Html.TextBoxFor(m => m.properties.email);
+                </div>
+                <div>
+                    @Html.LabelFor(m => m.properties.phone);
+                    @Html.TextBoxFor(m => m.properties.phone);
+                </div>
+
+                <div>
+                    <button>Lưu</button>
+                </div>
+            }
+        </div>
+    </body>
+</html>
+</body>
+</html>

@@ -1,0 +1,48 @@
+﻿@model WebHookApplication.ViewModel.ContactViewModel
+
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>title</title>
+</head>
+<body>
+<div>
+    @using (@Html.BeginForm("Save", "Contact"))
+    {
+        <div>
+            @Html.LabelFor(m => m.properties.firstname);
+            @Html.TextBoxFor(m => m.properties.firstname);
+        </div>
+        <div>
+            @Html.LabelFor(m => m.properties.lastname);
+            @Html.TextBoxFor(m => m.properties.lastname);
+        </div>
+        <div>
+            @Html.LabelFor(m => m.properties.email);
+            @Html.TextBoxFor(m => m.properties.email);
+        </div>
+        <div>
+            @Html.LabelFor(m => m.properties.phone);
+            @Html.TextBoxFor(m => m.properties.phone);
+        </div>
+        <div>
+            @Html.LabelFor(m => m.properties.company);
+            @Html.TextBoxFor(m => m.properties.company);
+        </div>
+        <div>
+            @Html.LabelFor(m => m.properties.website);
+            @Html.TextBoxFor(m => m.properties.website);
+        </div>
+        <div>
+            <button>Lưu</button>
+        </div>
+    }
+</div>
+</body>
+</html>

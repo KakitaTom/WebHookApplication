@@ -1,0 +1,59 @@
+﻿@model System.Collections.Generic.List<WebHookApplication.ViewModel.ContactViewModel>
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<h2>title</h2>
+<table class="table table-hover table-bordered">
+    <tr>
+        <th style="text-align: center">
+            <label>Id</label>
+        </th>
+        <th style="text-align: center">
+            <label>First Name</label>
+        </th>
+        <th style="text-align: center">
+            <label>Last Name</label>
+        </th>
+        <th style="text-align: center">
+            <label>Email</label>
+        </th>
+        <th style="text-align: center">
+            <label>Mã Staff Quản Lý</label>
+        </th>
+        <th style="text-align: center">
+            <label>Staff Quản lí</label>
+        </th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+<tr>
+    <td style="text-align: center">
+        @Html.Raw(Html.Encode(item.id))
+    </td>
+    <td>
+        @Html.Raw(Html.Encode(item.properties.firstname))
+    </td>
+    <td>
+        @Html.Raw(Html.Encode(item.properties.lastname))
+    </td>
+    <td>
+        @Html.Raw(Html.Encode(item.properties.email))
+    </td>
+    <td>
+        @Html.Raw(Html.Encode(item.staffOwnerId))
+    </td>
+    <td>
+        @Html.Raw(Html.Encode(item.staffOwnerName))
+    </td>
+    <td style="text-align: center">
+        @Html.ActionLink("Edit", "Edit", new { id = item.id }, new { @class = "btn btn-warning" })
+        @Html.ActionLink("Details", "Details", new { id = item.id }, new { @class = "btn btn-info" })
+        @Html.ActionLink("Delete", "Delete", new { id = item.id }, new { @class = "btn btn-danger" })
+    </td>
+</tr>
+    }
+</table>

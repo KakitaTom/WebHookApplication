@@ -1,0 +1,70 @@
+﻿@model System.Collections.Generic.List<WebHookApplication.ViewModel.ContactViewModel>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>List Khách Hàng</title>
+</head>
+<body>
+    <div>
+        @Html.ActionLink("Tạo khách hàng", "Create", "Contact");
+        <table class="table table-hover table-bordered">
+            <tr>
+                <th style="text-align: center">
+                    <label>Id</label>
+                </th>
+                <th style="text-align: center">
+                    <label>First Name</label>
+                </th>
+                <th style="text-align: center">
+                    <label>Last Name</label>
+                </th>
+                <th style="text-align: center">
+                    <label>Email</label>
+                </th>
+                <th style="text-align: center">
+                    <label>Created Date</label>
+                </th>
+                <th style="text-align: center">
+                    <label>Updated Date</label>
+                </th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td style="text-align: center">
+                        @Html.Raw(Html.Encode(item.id))
+                    </td>
+                    <td>
+                        @Html.Raw(Html.Encode(item.properties.firstname))
+                    </td>
+                    <td>
+                        @Html.Raw(Html.Encode(item.properties.lastname))
+                    </td>
+                    <td>
+                        @Html.Raw(Html.Encode(item.properties.email))
+                    </td>
+                    <td>
+                        @Html.Raw(Html.Encode(item.createdAt))
+                    </td>
+                    <td>
+                        @Html.Raw(Html.Encode(item.updatedAt))
+                    </td>
+                    <td style="text-align: center">
+                        @Html.ActionLink("Edit", "Edit", new { id = item.id }, new { @class = "btn btn-warning" })
+                        @Html.ActionLink("Details", "Details", new { id = item.id }, new { @class = "btn btn-info" })
+                        @Html.ActionLink("Delete", "Delete", new { id = item.id }, new { @class = "btn btn-danger" })
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </div>
+</body>
+</html>

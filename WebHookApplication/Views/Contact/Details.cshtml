@@ -1,0 +1,15 @@
+﻿@model WebHookApplication.ViewModel.ContactViewModel
+
+<br />
+Id: @Model.id
+<br />
+Full Name: @(Model.properties.firstname + " " + Model.properties.lastname)
+<br />
+Phone: @Model.properties.phone
+<br />
+Email: @Model.properties.email
+<br />
+Created: .@Model.createdAt
+<br />
+Update: @Model.updatedAt
+<br />

@@ -1,0 +1,15 @@
+﻿@model WebHookApplication.ViewModel.Code
+
+@{
+    Layout = null;
+}
+
+<a href="https://app.hubspot.com/oauth/authorize?client_id=6b4a5dfe-0e33-4245-8dd9-7ff53b7b3764&redirect_uri=https://lamwebapp.somee.com/Quote/Random&scope=contacts" role="button">Xác thực</a>
+
+@using (@Html.BeginForm("Test", "Contact"))
+{
+    @Html.LabelFor(m => m.code)
+    @Html.TextBoxFor(m => m.code)
+
+    <button>Xác thực</button>
+}
