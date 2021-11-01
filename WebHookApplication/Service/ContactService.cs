@@ -10,25 +10,47 @@ namespace WebHookApplication.Service
 {
     public class ContactService
     {
+        private StaffService _staffService;
+
+        public ContactService()
+        {
+            _staffService = new StaffService();
+        }
 
         public int GetStaff()
         {
-            if (GlobalData.ChosenStaffs.Count == 0)
+            using (var db = new akaBizAutoDbContext())
             {
-                GlobalData.ChosenStaffs = GlobalData.Staffs.Select(x => x.Id).ToList();
-            }
+                if (GlobalData.ChosenStaffs.Count == 0)
+                {
+                    GlobalData.ChosenStaffs = db.ConSplitData.Select(x => (int)x.StaffId).ToList();
+                }
 
-            if (GlobalData.Pos == GlobalData.ChosenStaffs.Count)
+                if (GlobalData.Pos == GlobalData.ChosenStaffs.Count)
+                {
+                    GlobalData.Pos = 0;
+                }
+
+                var res = GlobalData.Pos;
+
+                var pos = GlobalData.ChosenStaffs[res];
+
+                GlobalData.Pos++;
+                return pos;
+            }
+        }
+
+        public StaffView GetStaffById(int id)
+        {
+            using (var db = new akaBizAutoDbContext())
             {
-                GlobalData.Pos = 0;
+                var staff = db.staff.SingleOrDefault(x => x.Id == id);
+
+                var result = new StaffView();
+                result.Id = staff.Id;
+                result.Name = staff.Name;
+                return result;
             }
-
-            var res = GlobalData.Pos;
-
-            var pos = GlobalData.ChosenStaffs[res];
-
-            GlobalData.Pos++;
-            return pos;
         }
 
         public int Add(ContactViewModel contactViewModel)
@@ -37,20 +59,40 @@ namespace WebHookApplication.Service
             {
                 using (var db = new akaBizAutoDbContext())
                 {
-                    var contact = new Contact()
-                    {
-                        FirstName = contactViewModel.properties.firstname,
-                        LastName = contactViewModel.properties.lastname,
-                        Mobile = contactViewModel.properties.phone,
-                        Email = contactViewModel.properties.email,
-                        DateCreate = contactViewModel.createdAt,
-                        DateModify = contactViewModel.updatedAt,
-                        StaffOwnerId = contactViewModel.staffOwnerId,
-                        StaffOwnerName = contactViewModel.staffOwnerName,
-                        ContactHubSpotId = contactViewModel.id.ToString()
-                    };
+                    var contactInDB = db.Contacts.SingleOrDefault(x => x.ContactHubSpotId == contactViewModel.id.ToString());
 
-                    db.Contacts.Add(contact);
+                    if(contactInDB == null)
+                    {
+                        var pos = GetStaff();
+                        var staff = GetStaffById(pos);
+
+                        var contact = new Contact()
+                        {
+                            FirstName = contactViewModel.properties.firstname,
+                            LastName = contactViewModel.properties.lastname,
+                            Mobile = contactViewModel.properties.phone,
+                            Email = contactViewModel.properties.email,
+                            DateCreate = contactViewModel.createdAt,
+                            DateModify = contactViewModel.updatedAt,
+                            StaffOwnerId = staff.Id,
+                            StaffOwnerName = staff.Name,
+                            ContactHubSpotId = contactViewModel.id.ToString(),
+                            Source = "hubspot"
+                        };
+
+                        db.Contacts.Add(contact);
+                    }
+                    else
+                    {
+                        contactInDB.FirstName = contactViewModel.properties.firstname;
+                        contactInDB.LastName = contactViewModel.properties.lastname;
+                        contactInDB.Mobile = contactViewModel.properties.phone;
+                        contactInDB.Email = contactViewModel.properties.email;
+                        contactInDB.DateCreate = contactViewModel.createdAt;
+                        contactInDB.DateModify = contactViewModel.updatedAt;
+                        contactInDB.StaffOwnerId = contactViewModel.staffOwnerId;
+                        contactInDB.StaffOwnerName = contactViewModel.staffOwnerName;
+                    }
                     db.SaveChanges();
                 }
                 return 0;

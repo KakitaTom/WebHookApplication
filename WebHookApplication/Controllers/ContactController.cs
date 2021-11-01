@@ -18,10 +18,12 @@ namespace WebHookApplication.Controllers
     public class ContactController : Controller
     {
         private ContactService _contactService;
+        private StaffService _staffService;
 
         public ContactController()
         {
             _contactService = new ContactService();
+            _staffService = new StaffService();
         }
 
         [HttpGet]
@@ -30,6 +32,51 @@ namespace WebHookApplication.Controllers
         {
             Code code = new Code();
             return View(code);
+        }
+
+        [HttpGet]
+        [Route("contact/test")]
+        public IActionResult test()
+        {
+            using (var db = new akaBizAutoDbContext())
+            {
+                var str = db.Webhooks.FirstOrDefault(x => x.Source == "hubspot");
+                var contact = JsonConvert.DeserializeObject<List<DataWebhook>>(str.Message);
+
+                return Content(contact[0].objectId.ToString());
+            }
+        }
+
+        [Route("contact/confirm/{code}")]
+        public IActionResult Confirm(string code)
+        {
+            var newContact = new ContactViewModel()
+            {
+                firstname = "thinh",
+                lastname = "hoang",
+                mobile = "0987876124",
+                email = "thinhhoang@gmail.com",
+                KeyWordSplit = "OFFLINE " + "INTEGRATION " + "236745",
+                Averrage_Pageviews = "0",
+                Original_Sorce = "OFFLINE",
+                Original_Sorce_Drill_Down_1 = "INTEGRATION",
+                Original_Sorce_Drill_Down_2 = "236745",
+                ContactHubSpotId = "4",
+                Number_Of_Form_Submissions = 0,
+                Source = "hubspot"
+            };
+
+            using (null)
+            {
+                var client = new RestClient("http://app.akabiz.net/api/contact/splitDataContact?apiKey=2654%7C0967293539");
+                var request = new RestRequest(Method.POST);
+                request.AddHeader("accept", "application/json");
+                request.AddParameter("application/json", JsonConvert.SerializeObject(newContact), ParameterType.RequestBody);
+                IRestResponse response = client.Execute(request);
+                return Content(response.Content);
+            }
+
+            
         }
 
         [Route("contact/test")]
@@ -75,21 +122,22 @@ namespace WebHookApplication.Controllers
         [Route("contact/HubIndex")]
         public IActionResult HubIndex()
         {
-            var result = GlobalData.Contacts;
-            return View(result);
+//            var result = GlobalData.Contacts;
+//            return View(result);
+            return Content("Null");
         }
 
         [Route("contact/detail")]
         public IActionResult Details(int id)
         {
-            var client = new RestClient("https://api.hubapi.com/crm/v3/objects/contacts/" + id + "?archived=false");
+            var client = new RestClient("https://api.hubapi.com/crm/v3/objects/contacts/" + id + "?properties=firstname%2Clastname%2Cphone%2Cemail%2Chs_analytics_source%2Chs_analytics_source_data_1%2Chs_analytics_source_data_2%2Chs_analytics_first_url%2Chs_analytics_last_url%2Chs_analytics_first_referrer%2Chs_analytics_last_referrer%2Chs_analytics_average_page_views%2Crecent_conversion_event_name%2Crecent_conversion_date&archived=false");
             var request = new RestRequest(Method.GET);
             request.AddHeader("accept", "application/json");
             request.AddHeader("authorization", "Bearer " + AccessToken.access_token);
             IRestResponse response = client.Execute(request);
 
             ContactViewModel contactViewModel = JsonConvert.DeserializeObject<ContactViewModel>(response.Content);
-            return Content(response.Content);
+            return Content(contactViewModel.properties.hs_analytics_average_page_views);
             return View(contactViewModel);
         }
 
@@ -117,12 +165,12 @@ namespace WebHookApplication.Controllers
 
             ContactViewModel contact = JsonConvert.DeserializeObject<ContactViewModel>(response.Content);
 
-            var pos = _contactService.GetStaff();
-            var staff = GlobalData.Staffs.SingleOrDefault(x => x.Id == pos);
-            contact.staffOwnerId = staff.Id;
-            contact.staffOwnerName = staff.Name;
+//            var pos = _contactService.GetStaff();
+//            var staff = GlobalData.Staffs.SingleOrDefault(x => x.Id == pos);
+//            contact.staffOwnerId = staff.Id;
+//            contact.staffOwnerName = staff.Name;
 
-            _contactService.Add(contact);
+//            _contactService.Add(contact);
 
             return Content(response.Content);
         }
@@ -186,7 +234,7 @@ namespace WebHookApplication.Controllers
         {
             DivideViewModel divide = new DivideViewModel();
 
-            divide.ListStaff = GlobalData.Staffs.Select(x => new SelectListItem {Text = x.Name, Value = x.Id.ToString()}).ToList();
+            divide.ListStaff = _staffService.GetSplitStaff().Select(x => new SelectListItem {Text = x.Name, Value = x.Id.ToString()}).ToList();
             return View(divide);
         }
 
@@ -194,25 +242,24 @@ namespace WebHookApplication.Controllers
         {
             GlobalData.Pos = 0;
             var result = new List<int>();
+
+            var str = "";
+
+            foreach (var item in div.ListStaffId)
+            {
+                str += item + " - ";
+            }
+
             if (!string.IsNullOrWhiteSpace(div.KeyWord))
             {
-                result = GlobalData.Staffs.Where(x => div.ListStaffId.Contains(x.Id) && (string.IsNullOrWhiteSpace(x.KeyWord) || x.KeyWord.Contains(div.KeyWord))).Select(x => x.Id).ToList();
+                result = _staffService.GetSplitStaff().Where(x => div.ListStaffId.Contains(x.Id) && (string.IsNullOrWhiteSpace(x.KeyWord) || x.KeyWord.Contains(div.KeyWord))).Select(x => x.Id).ToList();
             }
             else
             {
-                result = GlobalData.Staffs.Where(x => div.ListStaffId.Contains(x.Id)).Select(x => x.Id).ToList();
+                result = _staffService.GetSplitStaff().Where(x => div.ListStaffId.Contains(x.Id)).Select(x => x.Id).ToList();
             }
 
             GlobalData.ChosenStaffs = result.ToList();
-
-            
-            //            var str= "";
-            //            foreach (var i in result)
-            //            {
-            //                str += "       " + i;
-            //            }
-            //
-            //            return Content(GlobalData.ChosenStaffs.Count().ToString());
             return RedirectToAction("Index");
         }
     }

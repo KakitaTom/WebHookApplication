@@ -94,6 +94,7 @@ namespace WebHookApplication.Models
         public int? ContactId { get; set; }
         public decimal? Money { get; set; }
         public bool? IsConvert { get; set; }
+        public int? MaxStaff { get; set; }
 
         public virtual ICollection<AutoCampaign> AutoCampaigns { get; set; }
         public virtual ICollection<AutoShopCategory> AutoShopCategories { get; set; }

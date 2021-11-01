@@ -21,7 +21,9 @@ namespace WebHookApplication.Models
         public virtual DbSet<AccDeposit> AccDeposits { get; set; }
         public virtual DbSet<AccPackage> AccPackages { get; set; }
         public virtual DbSet<Account> Accounts { get; set; }
+        public virtual DbSet<AkaBizSendEmailNoti> AkaBizSendEmailNotis { get; set; }
         public virtual DbSet<AkaBizSetting> AkaBizSettings { get; set; }
+        public virtual DbSet<AkaBizSmtp> AkaBizSmtps { get; set; }
         public virtual DbSet<AkabizApiConnect> AkabizApiConnects { get; set; }
         public virtual DbSet<AutoAccount> AutoAccounts { get; set; }
         public virtual DbSet<AutoAutomate> AutoAutomates { get; set; }
@@ -268,6 +270,15 @@ namespace WebHookApplication.Models
                 entity.Property(e => e.ZaloSocial).HasMaxLength(20);
             });
 
+            modelBuilder.Entity<AkaBizSendEmailNoti>(entity =>
+            {
+                entity.ToTable("AkaBizSendEmailNoti");
+
+                entity.Property(e => e.DateSendExpected).HasColumnType("datetime");
+
+                entity.Property(e => e.Email).HasMaxLength(50);
+            });
+
             modelBuilder.Entity<AkaBizSetting>(entity =>
             {
                 entity.HasNoKey();
@@ -283,6 +294,23 @@ namespace WebHookApplication.Models
                 entity.Property(e => e.PackageMonthSms).HasColumnName("PackageMonth_Sms");
 
                 entity.Property(e => e.PackageMonthZalo).HasColumnName("PackageMonth_Zalo");
+            });
+
+            modelBuilder.Entity<AkaBizSmtp>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("AkaBizSMTP");
+
+                entity.Property(e => e.Email)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.Password).HasMaxLength(100);
+
+                entity.Property(e => e.ServerName).HasMaxLength(150);
+
+                entity.Property(e => e.Username).HasMaxLength(100);
             });
 
             modelBuilder.Entity<AkabizApiConnect>(entity =>
@@ -2257,8 +2285,6 @@ namespace WebHookApplication.Models
             {
                 entity.ToTable("Webhook");
 
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.DateCreate).HasColumnType("datetime");
 
                 entity.Property(e => e.Message).HasColumnType("ntext");
@@ -2273,6 +2299,8 @@ namespace WebHookApplication.Models
             modelBuilder.Entity<staff>(entity =>
             {
                 entity.ToTable("Staff");
+
+                entity.Property(e => e.DateExpiration).HasColumnType("datetime");
 
                 entity.Property(e => e.Email).HasMaxLength(50);
 

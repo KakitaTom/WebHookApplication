@@ -44,6 +44,7 @@ namespace WebHookApplication.Models
         public int? SeedingHourFrom { get; set; }
         public int? SeedingHourTo { get; set; }
         public string SeedingDayType { get; set; }
+        public DateTime? DateExpiration { get; set; }
 
         public virtual ICollection<Company> Companies { get; set; }
         public virtual ICollection<Deal> Deals { get; set; }

@@ -21,5 +21,6 @@ namespace WebHookApplication.Models
         public int? PackageFreeMaxActionInDay { get; set; }
         public bool? PackageFreeIsAutomate { get; set; }
         public int? ImportMax { get; set; }
+        public int? MaxDataSmsDemo { get; set; }
     }
 }

@@ -7,7 +7,7 @@ namespace WebHookApplication.Models
 {
     public partial class Webhook
     {
-        public Guid Id { get; set; }
+        public long Id { get; set; }
         public string Message { get; set; }
         public string Source { get; set; }
         public DateTime? DateCreate { get; set; }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using WebHookApplication.Models;
 using WebHookApplication.ViewModel;
 
@@ -9,35 +10,38 @@ namespace WebHookApplication.Service
 {
     public class WebhookService
     {
-//        private Webhook webhook;
+        public int Create(WebhookView webhookViewPam)
+        {
+            try
+            {
+                using (var db = new akaBizAutoDbContext())
+                {
+                    var webhook = new Webhook()
+                    {
+                        Message = webhookViewPam.message,
+                        DateCreate = webhookViewPam.dateCreated,
+                        Source = webhookViewPam.source,
+                        SourceCategory = webhookViewPam.sourceCategory
+                    };
+
+                    db.Webhooks.Add(webhook);
+                    db.SaveChanges();
+                    return 0;
+                }
+            }
+            catch (Exception)
+            {
+                return -1;
+            }
+        }
 //
-//        public int Create(WebhookView webhookViewPam)
-//        {
-//            try
-//            {
-//                using (var db = new WebhookContext())
-//                {
-//                    webhook = new Webhook { DataWebhook = webhookViewPam.DataWebhook, DateCreated = DateTime.Now };
-//
-//                    db.Webhooks.Add(webhook);
-//                    db.SaveChanges();
-//                }
-//            }
-//            catch (Exception)
-//            {
-//
-//                return -2;
-//            }
-//            return 1;
-//        }
-//
-//        public List<Webhook> GetALL()
-//        {
-//            using (var db = new WebhookContext())
-//            {
-//                return db.Webhooks.ToList();
-//
-//            }
-//        }
+        public List<Webhook> GetALL()
+        {
+            using (var db = new akaBizAutoDbContext())
+            {
+                return db.Webhooks.ToList();
+
+            }
+        }
     }
 }
